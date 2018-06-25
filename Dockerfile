@@ -9,4 +9,5 @@ ADD . /app
 # open port to the outside
 EXPOSE 80
 
+//test start
 CMD ["go","run","server.go"]
