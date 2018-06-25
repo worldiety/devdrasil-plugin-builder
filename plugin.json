@@ -1,0 +1,122 @@
+{
+  "id": "de.worldiety.buildserver",
+  "doc": "The plugin specification of the worldiety build server",
+  "repositories": [
+    {
+      "name": "Project",
+      "doc": "Repository which holds meta information about all available projects",
+      "fields": [
+        {
+          "name": "id",
+          "type": "PK",
+          "doc": "The unique id of each project"
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "doc": "The name of the project"
+        },
+        {
+          "name": "repositories",
+          "type": "[]string",
+          "doc": "Git repositories for this project"
+        }
+      ]
+    },
+    {
+      "name": "Build",
+      "doc": "Repository which holds meta information about all available builds",
+      "fields": [
+        {
+          "name": "id",
+          "type": "PK",
+          "doc": "The unique id of each build"
+        },
+        {
+          "name": "projectId",
+          "type": "PK",
+          "doc": "The foreign key of the project, to which this build belongs"
+        },
+        {
+          "name": "log",
+          "type": "PK",
+          "doc": "The foreign key to the file which holds the log"
+        }
+      ]
+    },
+    {
+      "name": "File",
+      "doc": "Repository which holds binary files",
+      "fields": [
+        {
+          "name": "id",
+          "type": "PK",
+          "doc": "The unique id of each file"
+        },
+        {
+          "name": "data",
+          "type": "[]byte",
+          "doc": "the actual binary data"
+        }
+      ]
+    }
+  ],
+  "endpoints": [
+    {
+      "path": "/project",
+      "verb": "GET",
+      "doc": "Lists all available projects.",
+      "return": "[]Project",
+      "permissions": [
+        "LIST_PROJECTS",
+        "ADMIN"
+      ]
+    },
+    {
+      "path": "/project/{Project.id}",
+      "verb": "GET",
+      "doc": "Returns a specific project",
+      "return": "Project",
+      "permissions": [
+        "GET_PROJECT",
+        "ADMIN"
+      ]
+    },
+    {
+      "path": "/project/{Project.id}",
+      "verb": "DELETE",
+      "doc": "Deletes a specific project",
+      "return": "",
+      "permissions": [
+        "DELETE_PROJECT",
+        "ADMIN"
+      ]
+    }
+  ],
+  "states": [
+    {
+      "name": "project",
+      "doc": "As a user, I want to add/remove/update projects and connect them to multiple git repositories. Each project may also contain multiple servers, of different kind e.g. dev, staging and production."
+    },
+    {
+      "name": "commitpicker",
+      "doc": "As a user, I want to browse my git-repositories by branch and commits to pick what I want to build."
+    },
+    {
+      "name": "build",
+      "doc": "As a user, I want to browse completed (either successful or failed) builds."
+    },
+    {
+      "name": "deliverable",
+      "doc": "As a user, I want to browse the deliverables. I want to download them."
+    },
+    {
+      "name": "deploy",
+      "doc": "As a user, I want to see which version has been deployed to any project server. I want to deploy an artifact to a specific server."
+    },
+    {
+      "name": "queue",
+      "doc": "As a user, I want to see the build queue and what's up next. Also I want to prioritze builds and cancel them."
+    }
+  ],
+}
