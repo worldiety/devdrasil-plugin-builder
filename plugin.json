@@ -1,10 +1,24 @@
 {
+  "generator": {
+    "version": "gojs-1.0.0"
+  },
   "id": "de.worldiety.buildserver",
   "doc": "The plugin specification of the worldiety build server",
-  "repositories": [
+  "entities": [
+    {
+      "name": "ProjectList",
+      "doc": "Entity which just holds an array of Projects",
+      "fields": [
+        {
+          "name": "list",
+          "type": "[]Project",
+          "doc": "projects in this list"
+        }
+      ]
+    },
     {
       "name": "Project",
-      "doc": "Repository which holds meta information about all available projects",
+      "doc": "Entity which holds meta information about all available projects",
       "fields": [
         {
           "name": "id",
@@ -25,7 +39,7 @@
     },
     {
       "name": "Build",
-      "doc": "Repository which holds meta information about all available builds",
+      "doc": "Entity which holds meta information about all available builds",
       "fields": [
         {
           "name": "id",
@@ -34,19 +48,19 @@
         },
         {
           "name": "projectId",
-          "type": "PK",
+          "type": "FK(Project.id)",
           "doc": "The foreign key of the project, to which this build belongs"
         },
         {
           "name": "log",
-          "type": "PK",
+          "type": "File.Id",
           "doc": "The foreign key to the file which holds the log"
         }
       ]
     },
     {
       "name": "File",
-      "doc": "Repository which holds binary files",
+      "doc": "Entity which holds binary files",
       "fields": [
         {
           "name": "id",
@@ -61,41 +75,69 @@
       ]
     }
   ],
+  "repositories": [
+    {
+      "entity": "Project",
+      "storeIn": "devdrasil-json",
+      "offline": [
+        "READ",
+        "LIST"
+      ]
+    },
+    {
+      "entity": "Build",
+      "storeIn": "devdrasil-json"
+    },
+    {
+      "entity": "File",
+      "storeIn": "devdrasil-json"
+    }
+  ],
   "endpoints": [
     {
-      "path": "/project",
-      "verb": "GET",
-      "doc": "Lists all available projects.",
-      "return": "[]Project",
-      "permissions": [
-        "LIST_PROJECTS",
-        "ADMIN"
-      ]
+      "publish": "Repository",
+      "of": "Build"
     },
     {
-      "path": "/project/{Project.id}",
-      "verb": "GET",
-      "doc": "Returns a specific project",
-      "return": "Project",
-      "permissions": [
-        "GET_PROJECT",
-        "ADMIN"
-      ]
+      "publish": "Path",
+      "as": "/fancyStuff/{id}/{otherVar}/blub/{yetAnotherVar}",
+      "withVerb": "GET",
+      "withBody": "Project",
+      "withResult": "ProjectList",
+      "allowedFor": [
+        "DO_FANCY_STUFF"
+      ],
+      "doc": "Performs fancy stuff"
+    }
+  ],
+  "stories": [
+    {
+      "name": "fancyStory1",
+      "doc": "As a user, I want to add/remove/update fancy stuff of different kind e.g. dev, staging and production."
     },
     {
-      "path": "/project/{Project.id}",
-      "verb": "DELETE",
-      "doc": "Deletes a specific project",
-      "return": "",
-      "permissions": [
-        "DELETE_PROJECT",
-        "ADMIN"
-      ]
+      "name": "fancyStory2",
+      "doc": "As a user, I want to be fancy on every state."
+    }
+  ],
+  "views": [
+    {
+      "view": "ViewDashboard",
+      "of": "ViewDashboardModel"
     }
   ],
   "states": [
     {
-      "name": "project",
+      "state": "UISDashboard",
+      "refersTo": [
+        "fancyStory1",
+        "fancyStory2"
+      ],
+      "name": "FancyStuff",
+      "states": [
+        "UISDashboard",
+        "UISConfigureDashboard"
+      ],
       "doc": "As a user, I want to add/remove/update projects and connect them to multiple git repositories. Each project may also contain multiple servers, of different kind e.g. dev, staging and production."
     },
     {
@@ -118,5 +160,5 @@
       "name": "queue",
       "doc": "As a user, I want to see the build queue and what's up next. Also I want to prioritze builds and cancel them."
     }
-  ],
+  ]
 }
